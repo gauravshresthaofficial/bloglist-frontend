@@ -6,30 +6,7 @@ import Notification from './components/Notification'
 import axios from 'axios'
 import Togglable from './components/Toggleable'
 import BlogForm from './components/BlogForm'
-
-
-const LoginForm = ({ username, setUsername, password, setPassword, handleLogin }) => {
-  return (
-    <form onSubmit={handleLogin}>
-      <h2>Login to the application</h2>
-      <p>username</p>
-      <input
-        type="text"
-        value={username}
-        name="Username"
-        onChange={({ target }) => setUsername(target.value)}
-      />
-      <p>password</p>
-      <input
-        type="text"
-        value={password}
-        onChange={({ target }) => { setPassword(target.value) }}
-      />
-      <button type='submit' >Login</button>
-    </form>
-  )
-}
-
+import LoginForm from './components/LoginFrom'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -198,8 +175,9 @@ const App = () => {
             <BlogForm handleBlog={handleBlog} handleChange={handleChange} newBlog={newBlog} />
           </Togglable>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} updateLikes={updateLikes} user={user} handleDelete={handleDelete}/>
+            <Blog key={blog.id} blog={blog} updateLikes={updateLikes} user={user} handleDelete={handleDelete} />
           )}
+          {/* <Togglable>dsafasdf</Togglable> */}
         </div>
       }
     </>
