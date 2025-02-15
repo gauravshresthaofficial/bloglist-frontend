@@ -4,6 +4,8 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import axios from 'axios'
+import Togglable from './components/Toggleable'
+import BlogForm from './components/BlogForm'
 
 
 const LoginForm = ({ username, setUsername, password, setPassword, handleLogin }) => {
@@ -24,20 +26,6 @@ const LoginForm = ({ username, setUsername, password, setPassword, handleLogin }
         onChange={({ target }) => { setPassword(target.value) }}
       />
       <button type='submit' >Login</button>
-    </form>
-  )
-}
-
-const BlogForm = ({ newBlog, handleChange, handleBlog }) => {
-  return (
-    <form onSubmit={handleBlog}>
-      <h2>Create new blog</h2>
-      <p>Title</p><input type='text' name='title' value={newBlog.title} onChange={handleChange} />
-      <p>Author</p><input type='text' name='author' value={newBlog.author} onChange={handleChange} />
-      <p>Url</p><input type='text' name='url' value={newBlog.url} onChange={handleChange} />
-      {/* <p>Likes</p><input type='number' name='likes' value={newBlog.likes} onChange={handleChange} /> */}
-
-      <button type='submit'>Create</button>
     </form>
   )
 }
@@ -72,7 +60,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs(blogs)
+      setBlogs(sortBlogs(blogs))
     )
   }, [])
 
@@ -146,26 +134,71 @@ const App = () => {
     }))
   }
 
+  const updateLikes = async (blog) => {
+    const { id, title, author, likes, url } = blog
+
+    try {
+      const updatedBlog = await blogService.update({
+        id, title, author, likes: likes + 1, url
+      })
+      setBlogs(blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog)))
+      setNotification({
+        type: "success",
+        text: "Update Successful"
+      })
+    } catch (error) {
+      console.log("Error updating:", error.message)
+    }
+  }
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Do you want to delete?")) {
+      try {
+        await blogService.deleteBlog(id)
+        setBlogs((prevBlogs) => prevBlogs.filter(blog => blog.id != id))
+        setNotification({
+          type: "success",
+          text: 'Delete sucessfull'
+        })
+      } catch (error) {
+        console.log("Error deleting:", error.message)
+        setNotification({
+          type: "success",
+          text: 'Error on deletion'
+        })
+      }
+
+    }
+  }
+
+  const sortBlogs = (blogs) => {
+    return blogs.sort((a, b) => b.likes - a.likes)
+  }
+
 
 
   return (
     <>
       <Notification notification={notification} setNotification={setNotification} />
       {user === null ?
+
         <LoginForm
           username={username}
           setUsername={setUsername}
           password={password}
           setPassword={setPassword}
           handleLogin={handleLogin}
-        /> :
+        />
+
+        :
         <div>
           <h2>blogs</h2>
-          <p>{user.username} logged in</p>
-          <button onClick={handleLogout}>Log Out</button>
-          <BlogForm handleBlog={handleBlog} handleChange={handleChange} newBlog={newBlog} />
+          <p>{user.username} logged in</p><button onClick={handleLogout}>Log Out</button>
+          <Togglable buttonLabel='New Blog'>
+            <BlogForm handleBlog={handleBlog} handleChange={handleChange} newBlog={newBlog} />
+          </Togglable>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} updateLikes={updateLikes} user={user} handleDelete={handleDelete}/>
           )}
         </div>
       }
