@@ -4,7 +4,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import axios from 'axios'
-import Togglable from './components/Toggleable'
+import Toggleable from './components/Toggleable'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginFrom'
 
@@ -13,13 +13,7 @@ const App = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [user, setUser] = useState(null)
-  const [newBlog, setNewBlog] = useState({
-    title: '',
-    author: '',
-    likes: 0,
-    url: '',
 
-  })
   const [notification, setNotification] = useState(null)
 
 
@@ -77,39 +71,29 @@ const App = () => {
     })
   }
 
-  const handleBlog = async (e) => {
-    e.preventDefault()
+  const addBlog = async (newBlog) => {
     console.log("Blog form button clicked", newBlog)
 
     try {
       const returnedBlog = await blogService.create(newBlog)
       setBlogs((prevBlogs) => prevBlogs.concat(returnedBlog))
-      setNewBlog({
-        title: '',
-        author: '',
-        likes: 0,
-        url: '',
 
-      })
       setNotification({
         type: "success",
         text: `New Blog added by ${user.username}`
       })
+      return true
     } catch (error) {
       console.log("Error adding: ", error.response.data.error)
       setNotification({
         type: "error",
         text: error.response.data.error
       })
+      return false
     }
   }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setNewBlog((prevBlog) => ({
-      ...prevBlog, [name]: value
-    }))
-  }
+
 
   const updateLikes = async (blog) => {
     const { id, title, author, likes, url } = blog
@@ -171,13 +155,13 @@ const App = () => {
         <div>
           <h2>blogs</h2>
           <p>{user.username} logged in</p><button onClick={handleLogout}>Log Out</button>
-          <Togglable buttonLabel='New Blog'>
-            <BlogForm handleBlog={handleBlog} handleChange={handleChange} newBlog={newBlog} />
-          </Togglable>
+          <Toggleable buttonLabel='New Blog'>
+            <BlogForm addBlog={addBlog} />
+          </Toggleable>
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} updateLikes={updateLikes} user={user} handleDelete={handleDelete} />
           )}
-          {/* <Togglable>dsafasdf</Togglable> */}
+          {/* <Toggleable>dsafasdf</Toggleable> */}
         </div>
       }
     </>
