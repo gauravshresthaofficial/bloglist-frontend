@@ -126,7 +126,7 @@ const App = () => {
         setBlogs((prevBlogs) => prevBlogs.filter(blog => blog.id != id))
         setNotification({
           type: "success",
-          text: 'Delete sucessfull'
+          text: 'Delete successful'
         })
       } catch (error) {
         console.log("Error deleting:", error.message)
