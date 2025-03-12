@@ -10,12 +10,14 @@ const LoginForm = ({ username, setUsername, password, setPassword, handleLogin }
                 type="text"
                 value={username}
                 name="Username"
+                data-testid='username'
                 onChange={({ target }) => setUsername(target.value)}
             />
             <p>password</p>
             <input
                 type="text"
                 value={password}
+                data-testid='password'
                 onChange={({ target }) => { setPassword(target.value) }}
             />
             <button type='submit' >Login</button>

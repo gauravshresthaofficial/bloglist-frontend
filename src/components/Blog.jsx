@@ -19,12 +19,14 @@ const Blog = ({ blog, updateLikes, user, handleDelete }) => {
 
   return (
     < div style={blogStyle} className="blog">
-      {blog.title} {blog.author}
+      <div data-testid="title">
+        {blog.title} {blog.author}
+      </div>
       <button onClick={toggleVisibility}>{show ? "Hide" : "View"}</button>
       {show &&
         <div>
           <p>{blog.url}</p>
-          <p style={{ display: "inline", margin: "0 8px 0 0" }}>{blog.likes}</p>
+          <p style={{ display: "inline", margin: "0 8px 0 0" }} data-testid="likes">{blog.likes}</p>
           <button style={{ display: "inline" }} onClick={() => updateLikes(blog)}>Like</button>
           <p>{blog.user?.name}</p>
           {(user.username == blog.user?.username) ? <button onClick={() => handleDelete(blog.id)}>Delete</button> : ""}

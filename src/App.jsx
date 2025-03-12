@@ -30,10 +30,17 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(sortBlogs(blogs))
-    )
+    const fetchBlogs = async () => {
+      try {
+        const blogs = await blogService.getAll()
+        setBlogs(sortBlogs(blogs))
+      } catch (error) {
+        console.error('Error fetching blogs:', error)
+      }
+    }
+    fetchBlogs()
   }, [])
+
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -102,7 +109,7 @@ const App = () => {
       const updatedBlog = await blogService.update({
         id, title, author, likes: likes + 1, url
       })
-      setBlogs(blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog)))
+      setBlogs((prevBlogs) => sortBlogs(prevBlogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))))
       setNotification({
         type: "success",
         text: "Update Successful"
