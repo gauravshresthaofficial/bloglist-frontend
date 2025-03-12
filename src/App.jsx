@@ -168,7 +168,6 @@ const App = () => {
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} updateLikes={updateLikes} user={user} handleDelete={handleDelete} />
           )}
-          {/* <Toggleable>dsafasdf</Toggleable> */}
         </div>
       }
     </>
